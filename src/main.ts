@@ -51,7 +51,7 @@ const rotateButton = document.createElement("button");
 rotateButton.innerText = "Rotate 90° CCW";
 rotateButton.style.cssText = "position:absolute; top:20px; left:20px; padding:10px; cursor:pointer;";
 rotateButton.addEventListener("click", () => {
-  if (remainingAngle <= 0) {
+  if (remainingAngle === 0) {
     activeAxis.copy(zAxis);          // rotate about world Z
     remainingAngle += Math.PI / 2;   // positive = CCW by right-hand rule
   }
@@ -62,7 +62,7 @@ const flipButton = document.createElement("button");
 flipButton.innerText = "Flip Vert. Axis";
 flipButton.style.cssText = "position:absolute; top:80px; left:20px; padding:10px; cursor:pointer;";
 flipButton.addEventListener("click", () => {
-  if (remainingAngle <= 0) {
+  if (remainingAngle === 0) {
     activeAxis.copy(yAxis);          // rotate about world Y
     remainingAngle += Math.PI;       // exact 180°, forced CCW
   }
@@ -82,3 +82,17 @@ function animate() {
 }
 
 animate();
+
+function onResize() {
+  const width = app.clientWidth;
+  const height = app.clientHeight;
+
+  renderer.setSize(width, height);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+
+window.addEventListener("resize", onResize);
+
+// call once initially
+onResize();
