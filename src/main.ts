@@ -1,6 +1,9 @@
 import {
   BoxGeometry,
+  BufferGeometry,
+  CanvasTexture,
   Color,
+  Material,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
@@ -33,11 +36,74 @@ const camera = new PerspectiveCamera(fov, aspect, near, far);
 
 camera.position.set(0, 0, 10);
 
+const xAxis = new Vector3(1, 0, 0);
+const yAxis = new Vector3(0, 1, 0);
+const zAxis = new Vector3(0, 0, 1);
+
+class DihedralGroup4 {
+  geometry: BufferGeometry;
+  material: Material[] | Material;
+  mesh: Mesh;
+
+  remainingAngle = 0;
+  activeAxis = new Vector3(1, 0, 0);
+  rotateSpeed = 0.1;
+
+  constructor() {
+    const frontTexture = makeFaceTexture({
+      bgColor: "#d94b4b",
+      symbol: "▲",
+    });
+
+    const backTexture = makeFaceTexture({
+      bgColor: "#4b7bd9",
+      symbol: "▲",
+    });
+    const edgeMaterial = new MeshBasicMaterial({ color: 0x222222 });
+    this.geometry = new BoxGeometry(2, 2, 0.1);
+
+    this.material = [
+      edgeMaterial, // right
+      edgeMaterial, // left
+      edgeMaterial, // top
+      edgeMaterial, // bottom
+      new MeshBasicMaterial({ map: frontTexture }), // front
+      new MeshBasicMaterial({ map: backTexture }), // back
+    ];
+    this.mesh = new Mesh(this.geometry, this.material);
+  }
+
+  rotate() {
+    if (this.remainingAngle !== 0) return;
+    this.activeAxis.copy(zAxis);
+    this.remainingAngle = Math.PI / 2;
+  }
+
+  flip() {
+    if (this.remainingAngle !== 0) return;
+
+    this.activeAxis.copy(yAxis);
+    this.remainingAngle = Math.PI;
+  }
+
+  animate() {
+    if (this.remainingAngle > 0) {
+      const step =
+        this.remainingAngle < this.rotateSpeed / 5
+          ? this.remainingAngle
+          : this.remainingAngle * this.rotateSpeed;
+      this.mesh.rotateOnWorldAxis(this.activeAxis, step);
+      this.remainingAngle -= step;
+    }
+  }
+}
+
 // 2. Object Creation
-const geometry = new BoxGeometry(2, 2, 0.1);
-const material = new MeshBasicMaterial(); // Defaults to white
-const cube = new Mesh(geometry, material);
-scene.add(cube);
+// const geometry = new BoxGeometry(2, 2, 0.1);
+// const material = new MeshBasicMaterial(); // Defaults to white
+// const cube = new Mesh(geometry, material);
+const d4 = new DihedralGroup4();
+scene.add(d4.mesh);
 
 const renderer = new WebGLRenderer();
 renderer.setSize(viewerDim.width, viewerDim.height);
@@ -46,45 +112,28 @@ renderer.setPixelRatio(window.devicePixelRatio);
 viewer.appendChild(renderer.domElement);
 renderer.render(scene, camera);
 
-const xAxis = new Vector3(1, 0, 0);
-const yAxis = new Vector3(0, 1, 0);
-const zAxis = new Vector3(0, 0, 1);
-
-let remainingAngle = 0;
-let activeAxis = zAxis.clone();
-
-const rotateSpeed = 0.1; // radians per frame
-
 const rotateButton = document.createElement("button");
-rotateButton.innerText = "Rotate 90° CCW";
-rotateButton.style.cssText = "position:absolute; top:20px; left:20px; padding:10px; cursor:pointer;";
+rotateButton.innerText = "Rotate";
+rotateButton.style.cssText =
+  "position:absolute; top:20px; left:20px; padding:10px; cursor:pointer;";
 rotateButton.addEventListener("click", () => {
-  if (remainingAngle === 0) {
-    activeAxis.copy(zAxis);          // rotate about world Z
-    remainingAngle += Math.PI / 2;   // positive = CCW by right-hand rule
-  }
+  d4.rotate();
 });
 viewer.appendChild(rotateButton);
 
 const flipButton = document.createElement("button");
-flipButton.innerText = "Flip Vert. Axis";
-flipButton.style.cssText = "position:absolute; top:80px; left:20px; padding:10px; cursor:pointer;";
+flipButton.innerText = "Flip";
+flipButton.style.cssText =
+  "position:absolute; top:80px; left:20px; padding:10px; cursor:pointer;";
 flipButton.addEventListener("click", () => {
-  if (remainingAngle === 0) {
-    activeAxis.copy(yAxis);          // rotate about world Y
-    remainingAngle += Math.PI;       // exact 180°, forced CCW
-  }
+  d4.flip();
 });
 viewer.appendChild(flipButton);
 
 function animate() {
   requestAnimationFrame(animate);
 
-  if (remainingAngle > 0) {
-    const step = remainingAngle < rotateSpeed / 5 ? remainingAngle : remainingAngle * rotateSpeed;
-    cube.rotateOnWorldAxis(activeAxis, step);
-    remainingAngle -= step;
-  }
+  d4.animate();
 
   renderer.render(scene, camera);
 }
@@ -104,3 +153,35 @@ animate();
 
 // // call once initially
 // onResize();
+function makeFaceTexture({
+  bgColor = "#ffffff",
+  symbol = "*",
+  symbolColor = "#ffffff",
+  width = 256,
+  height = 256,
+}) {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d")!;
+
+  // background
+  ctx.fillStyle = bgColor;
+  ctx.fillRect(0, 0, width, height);
+
+  // border to make the face easier to read
+  ctx.strokeStyle = "rgba(255,255,255,0.35)";
+  ctx.lineWidth = 10;
+  ctx.strokeRect(10, 10, width - 20, height - 20);
+
+  // orientation symbol
+  ctx.fillStyle = symbolColor;
+  ctx.font = "bold 140px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(symbol, width / 2, height / 2);
+
+  const texture = new CanvasTexture(canvas);
+  return texture;
+}
