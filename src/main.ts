@@ -73,7 +73,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   if (remainingAngle > 0) {
-    const step = Math.min(rotateSpeed, remainingAngle);
+    const step = remainingAngle < rotateSpeed / 5 ? remainingAngle : remainingAngle * rotateSpeed;
     cube.rotateOnWorldAxis(activeAxis, step);
     remainingAngle -= step;
   }
