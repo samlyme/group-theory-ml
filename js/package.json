@@ -1,0 +1,19 @@
+{
+  "name": "group-theory-vis",
+  "version": "0.0.0",
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "type": "module",
+  "dependencies": {
+    "@types/three": "^0.183.1",
+    "three": "^0.183.2"
+  }
+}
