@@ -294,3 +294,11 @@ code {
     border-right-color: var(--border);
   }
 }
+
+
+canvas {
+border: 1px solid #333;
+image-rendering: pixelated;
+image-rendering: crisp-edges;
+cursor: crosshair;
+}
