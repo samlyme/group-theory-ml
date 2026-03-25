@@ -92,8 +92,37 @@
         </div>
     </div>
 
+    <h1>mnist_invariant_cnn</h1>
+    <div style="display: flex; align-items: flex-start; gap: 32px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <div style="display: flex; flex-direction: row; gap: 12px;">
+                <canvas id="draw-invariant" width="28" height="28"
+                    style="width: 560px; height: 560px; border: 1px solid black; image-rendering: pixelated; cursor: crosshair;"></canvas>
+
+                <canvas id="drag-invariant" width="56" height="56"
+                    style="width: 560px; height: 560px; border: 1px solid black; image-rendering: pixelated; cursor: crosshair;"></canvas>
+            </div>
+
+            <button id="clearBtn-invariant">Clear</button>
+        </div>
+
+        <div style="min-width: 180px;">
+            <h3 style="margin-top: 0;">Probabilities</h3>
+            <div id="probabilities-invariant"></div>
+        </div>
+
+        <div style="min-width: 120px;">
+            <h3 style="margin-top: 0;">Prediction</h3>
+            <div id="output-invariant" style="font-size: 64px; font-weight: bold; font-family: sans-serif;">
+                -
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="/src/draw.ts"></script>
     <script type="module" src="/src/drawBiased.ts"></script>
     <script type="module" src="/src/drawUniform.ts"></script>
+    <script type="module" src="/src/drawInvariant.ts"></script>
   </body>
 </html>
