@@ -12,7 +12,7 @@ import {
   WebGLRenderer,
 } from "three";
 
-const app = document.querySelector("#app")!;
+const app = document.querySelector("#group-d4")!;
 
 const viewerDim = { width: 800, height: 600 };
 const viewer = document.createElement("div");

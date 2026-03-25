@@ -7,11 +7,11 @@
     <title>group-theory-vis</title>
   </head>
   <body>
-    <div id="app">
+    <div id="group-d4">
       <h1>Group theory viz!</h1>
       
     </div>
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/groupD4.ts"></script>
 
     <h1>mnist_simple_mlp</h1>
     <div style="display: flex; align-items: flex-start; gap: 32px;">
@@ -33,6 +33,7 @@
             </div>
         </div>
     </div>
+    <script type="module" src="/src/drawSimple.ts"></script>
 
     <h1>mnist_biased_mlp</h1>
     <img src="/src/assets/biased_heatmap.png" alt="">
@@ -62,6 +63,7 @@
             </div>
         </div>
     </div>
+    <script type="module" src="/src/drawBiased.ts"></script>
 
     <h1>mnist_uniform_mlp</h1>
     <img src="/src/assets/uniform_heatmap.png" alt="">
@@ -91,6 +93,7 @@
             </div>
         </div>
     </div>
+    <script type="module" src="/src/drawUniform.ts"></script>
 
     <h1>mnist_invariant_cnn</h1>
     <img src="/src/assets/biased_heatmap.png" alt="">
@@ -120,10 +123,7 @@
             </div>
         </div>
     </div>
-
-    <script type="module" src="/src/draw.ts"></script>
-    <script type="module" src="/src/drawBiased.ts"></script>
-    <script type="module" src="/src/drawUniform.ts"></script>
     <script type="module" src="/src/drawInvariant.ts"></script>
+    
   </body>
 </html>
