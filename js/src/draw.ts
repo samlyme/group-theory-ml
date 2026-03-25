@@ -161,7 +161,8 @@ document.getElementById("clearBtn")!.addEventListener("click", () => {
 async function getSession() {
   if (session) return session;
 
-  session = await ort.InferenceSession.create("/assets/mnist_simple_mlp.onnx", {
+  const modelUrl = new URL('./assets/mnist_simple_mlp.onnx', import.meta.url).href;
+  session = await ort.InferenceSession.create(modelUrl, {
     executionProviders: ["webgpu", "wasm"],
   });
 
