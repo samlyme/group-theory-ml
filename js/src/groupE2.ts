@@ -6,6 +6,7 @@ import {
   MeshBasicMaterial,
   OrthographicCamera,
   PlaneGeometry,
+  RepeatWrapping,
   Scene,
   Vector3,
   WebGLRenderer,
@@ -55,7 +56,7 @@ class GroupE4 {
     });
     
     // Large plane that extends beyond the view
-    this.geometry = new PlaneGeometry(30, 30);
+    this.geometry = new PlaneGeometry(120, 120);
     this.mesh = new Mesh(this.geometry, this.material);
     
     this.targetPosition = new Vector3(0, 0, 0);
@@ -158,15 +159,15 @@ function animate() {
 animate();
 
 function makeCheckerboardTexture() {
-  const size = 1024;
+  const size = 2048;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
 
   const ctx = canvas.getContext("2d")!;
 
-  // Create checkerboard pattern
-  const divisions = 10;
+  // Create checkerboard pattern - 20x20 to match larger plane while keeping square size
+  const divisions = 20;
   const step = size / divisions;
 
   for (let i = 0; i < divisions; i++) {
@@ -176,7 +177,7 @@ function makeCheckerboardTexture() {
     }
   }
 
-  // Draw X axis indicator (Red)
+  // Draw X axis indicator (Red) - one per repeat, centered
   ctx.strokeStyle = "#ff4444";
   ctx.lineWidth = 8;
   ctx.beginPath();
@@ -199,5 +200,8 @@ function makeCheckerboardTexture() {
   ctx.fillText("F", size / 2 + step / 2, size / 2 - step / 2);
 
   const texture = new CanvasTexture(canvas);
+  texture.wrapS = RepeatWrapping;
+  texture.wrapT = RepeatWrapping;
+  texture.repeat.set(2, 2);
   return texture;
 }
