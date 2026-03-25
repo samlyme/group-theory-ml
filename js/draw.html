@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>28x28 Draw Grid</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        canvas {
+            border: 1px solid #333;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            cursor: crosshair;
+        }
+
+        .row {
+            margin-top: 12px;
+        }
+
+        button {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="draw" width="28" height="28" style="width: 560px; height: 560px;"></canvas>
+
+    <div class="row">
+        <button id="clearBtn">Clear</button>
+        <button id="printBtn">Print Float32Array</button>
+    </div>
+
+    <script type="module" src="/src/draw.ts"></script>
+</body>
+
+</html>
