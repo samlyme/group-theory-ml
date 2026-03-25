@@ -1,17 +1,16 @@
+import * as ort from "onnxruntime-web";
 
-import * as ort from 'onnxruntime-web';
-
-const canvas = document.getElementById("draw")!;
-const ctx = canvas.getContext("2d", { willReadFrequently: true });
+const canvas = document.getElementById("draw") as HTMLCanvasElement;
+const output = document.getElementById("output")!;
+const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
 // Fill background black
 ctx.fillStyle = "black";
 ctx.fillRect(0, 0, 28, 28);
 
 let drawing = false;
-let savedData = new Float32Array(28 * 28);
 
-function getCanvasPos(event) {
+function getCanvasPos(event: MouseEvent) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
@@ -22,7 +21,7 @@ function getCanvasPos(event) {
   };
 }
 
-function drawAt(x, y) {
+function drawAt(x: number, y: number) {
   // Draw a small soft-ish brush in white
   ctx.fillStyle = "white";
   ctx.beginPath();
@@ -40,14 +39,14 @@ async function predictOutput() {
     arr[i] = r / 255; // normalize to 0..1
   }
 
-  savedData = arr;
+  arr;
   const output = await runModel(arr);
+  if (!output) return 0;
   // pick highest output.
   let champ = 0;
   for (let i = 0; i < output.length; i++) {
     if (output[i] > output[champ]) champ = i;
   }
-  console.log("Saved Float32Array:", savedData);
 
   console.log("Prediction:", champ);
   return champ;
@@ -65,35 +64,22 @@ canvas.addEventListener("mousemove", (event) => {
   drawAt(x, y);
 });
 
-window.addEventListener("mouseup", () => {
+window.addEventListener("mouseup", async () => {
   if (!drawing) return;
   drawing = false;
-  predictOutput();
+  const pred = await predictOutput();
+  output.textContent = "Prediction: " + pred;
 });
 
 canvas.addEventListener("mouseleave", () => {
   if (!drawing) return;
   drawing = false;
-  {
-    {
-      /*  predictOutput();  */
-    }
-  }
 });
 
-document.getElementById("clearBtn").addEventListener("click", () => {
+document.getElementById("clearBtn")!.addEventListener("click", () => {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, 28, 28);
-  {
-    {
-      /*  predictOutput();  */
-    }
-  }
-});
-
-document.getElementById("printBtn").addEventListener("click", () => {
-  console.log(savedData);
-  predictOutput();
+  output.textContent = "none.";
 });
 
 async function runModel(float32Data: Float32Array) {
@@ -109,9 +95,9 @@ async function runModel(float32Data: Float32Array) {
     const input = new ort.Tensor("float32", float32Data, [1, 28 * 28]);
     const results = await session.run({ input: input });
 
-    const outputData = results.ouput;
+    const outputData = results.output as ort.Tensor;
     console.log("Inference successful. Output:", outputData);
-    return outputData;
+    return outputData.data as Float32Array;
   } catch (e) {
     console.error(`Inference failed: ${e}`);
   }
