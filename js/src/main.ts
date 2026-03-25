@@ -36,7 +36,7 @@ const camera = new PerspectiveCamera(fov, aspect, near, far);
 
 camera.position.set(0, 0, 10);
 
-const xAxis = new Vector3(1, 0, 0);
+// const xAxis = new Vector3(1, 0, 0);
 const yAxis = new Vector3(0, 1, 0);
 const zAxis = new Vector3(0, 0, 1);
 
