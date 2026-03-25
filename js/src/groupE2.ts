@@ -86,6 +86,12 @@ class GroupE4 {
     this.animating = true;
   }
 
+  reset() {
+    if (this.animating) return;
+    this.targetPosition.set(0, 0, 0);
+    this.animating = true;
+  }
+
   animate() {
     if (!this.animating) return;
     
@@ -111,42 +117,61 @@ renderer.setPixelRatio(window.devicePixelRatio);
 viewer.appendChild(renderer.domElement);
 renderer.render(scene, camera);
 
-// UI Buttons
-const slideRightButton = document.createElement("button");
-slideRightButton.innerText = "(+X)";
-slideRightButton.style.cssText =
-  "position:absolute; top:20px; left:20px; padding:10px; cursor:pointer;";
-slideRightButton.addEventListener("click", () => {
-  e4Plane.slideRight();
-});
-viewer.appendChild(slideRightButton);
+// D-Pad UI Container
+const dpadContainer = document.createElement("div");
+dpadContainer.style.cssText =
+  "position:absolute; bottom:20px; left:20px; width:120px; height:120px;";
+viewer.appendChild(dpadContainer);
 
-const slideLeftButton = document.createElement("button");
-slideLeftButton.innerText = "(-X)";
-slideLeftButton.style.cssText =
-  "position:absolute; top:70px; left:20px; padding:10px; cursor:pointer;";
-slideLeftButton.addEventListener("click", () => {
-  e4Plane.slideLeft();
-});
-viewer.appendChild(slideLeftButton);
-
+// Up button
 const slideUpButton = document.createElement("button");
-slideUpButton.innerText = "(+Y)";
+slideUpButton.innerText = "▲";
 slideUpButton.style.cssText =
-  "position:absolute; top:120px; left:20px; padding:10px; cursor:pointer;";
+  "position:absolute; top:0; left:40px; width:40px; height:40px; padding:5px; cursor:pointer;";
 slideUpButton.addEventListener("click", () => {
   e4Plane.slideUp();
 });
-viewer.appendChild(slideUpButton);
+dpadContainer.appendChild(slideUpButton);
 
+// Left button
+const slideLeftButton = document.createElement("button");
+slideLeftButton.innerText = "◀";
+slideLeftButton.style.cssText =
+  "position:absolute; top:40px; left:0; width:40px; height:40px; padding:5px; cursor:pointer;";
+slideLeftButton.addEventListener("click", () => {
+  e4Plane.slideLeft();
+});
+dpadContainer.appendChild(slideLeftButton);
+
+// Reset button (center)
+const resetButton = document.createElement("button");
+resetButton.innerText = "●";
+resetButton.style.cssText =
+  "position:absolute; top:40px; left:40px; width:40px; height:40px; padding:5px; cursor:pointer; background:#ff4444; color:white; border:none; border-radius:5px;";
+resetButton.addEventListener("click", () => {
+  e4Plane.reset();
+});
+dpadContainer.appendChild(resetButton);
+
+// Right button
+const slideRightButton = document.createElement("button");
+slideRightButton.innerText = "▶";
+slideRightButton.style.cssText =
+  "position:absolute; top:40px; left:80px; width:40px; height:40px; padding:5px; cursor:pointer;";
+slideRightButton.addEventListener("click", () => {
+  e4Plane.slideRight();
+});
+dpadContainer.appendChild(slideRightButton);
+
+// Down button
 const slideDownButton = document.createElement("button");
-slideDownButton.innerText = "(-Y)";
+slideDownButton.innerText = "▼";
 slideDownButton.style.cssText =
-  "position:absolute; top:170px; left:20px; padding:10px; cursor:pointer;";
+  "position:absolute; top:80px; left:40px; width:40px; height:40px; padding:5px; cursor:pointer;";
 slideDownButton.addEventListener("click", () => {
   e4Plane.slideDown();
 });
-viewer.appendChild(slideDownButton);
+dpadContainer.appendChild(slideDownButton);
 
 function animate() {
   requestAnimationFrame(animate);
