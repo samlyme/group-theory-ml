@@ -284,8 +284,8 @@ dragCanvas.addEventListener("mouseleave", () => {
 
 document.getElementById("clearBtn-biased")!.addEventListener("click", () => {
   resetDrawCanvas();
-  patchLeft = 14;
-  patchTop = 14;
+  // patchLeft = 14;
+  // patchTop = 14;
   renderDragPreview();
 
   output.textContent = "-";
