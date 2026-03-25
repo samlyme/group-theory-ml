@@ -28,12 +28,26 @@
 </head>
 
 <body>
-    <canvas id="draw" width="28" height="28" style="width: 560px; height: 560px;"></canvas>
 
-    <h2 id="output">none.</h2>
+    <h1>mnist_simple_mlp</h1>
+    <div style="display: flex; align-items: flex-start; gap: 32px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <canvas id="draw" width="28" height="28"
+                style="width: 560px; height: 560px; border: 1px solid black; image-rendering: pixelated; cursor: crosshair;"></canvas>
+            <button id="clearBtn">Clear</button>
+        </div>
 
-    <div class="row">
-        <button id="clearBtn">Clear</button>
+        <div style="min-width: 180px;">
+            <h3 style="margin-top: 0;">Probabilities</h3>
+            <div id="probabilities"></div>
+        </div>
+
+        <div style="min-width: 120px;">
+            <h3 style="margin-top: 0;">Prediction</h3>
+            <div id="output" style="font-size: 64px; font-weight: bold; font-family: sans-serif;">
+                -
+            </div>
+        </div>
     </div>
 
     <script type="module" src="/src/draw.ts"></script>
