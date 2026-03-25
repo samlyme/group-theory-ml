@@ -1,8 +1,9 @@
 import * as ort from "onnxruntime-web";
 
-const canvas = document.getElementById("draw") as HTMLCanvasElement;
-const output = document.getElementById("output")!;
-const probsContainer = document.getElementById("probabilities")!;
+
+const canvas = document.getElementById("draw-simple") as HTMLCanvasElement;
+const output = document.getElementById("output-simple")!;
+const probsContainer = document.getElementById("probabilities-simple")!;
 const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
 
 // Fill background black
@@ -143,7 +144,7 @@ canvas.addEventListener("mouseleave", () => {
   drawing = false;
 });
 
-document.getElementById("clearBtn")!.addEventListener("click", () => {
+document.getElementById("clearBtn-simple")!.addEventListener("click", () => {
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, 28, 28);
 
