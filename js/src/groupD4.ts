@@ -3,10 +3,12 @@ import {
   BufferGeometry,
   CanvasTexture,
   Color,
+  Euler,
   Material,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
+  Quaternion,
   Scene,
   Vector3,
   WebGLRenderer,
@@ -40,6 +42,8 @@ camera.position.set(0, 0, 10);
 const yAxis = new Vector3(0, 1, 0);
 const zAxis = new Vector3(0, 0, 1);
 
+type Operation = "rotate" | "flip";
+
 class DihedralGroup4 {
   geometry: BufferGeometry;
   material: Material[] | Material;
@@ -48,6 +52,13 @@ class DihedralGroup4 {
   remainingAngle = 0;
   activeAxis = new Vector3(1, 0, 0);
   rotateSpeed = 0.1;
+  
+  isResetting = false;
+  resetProgress = 0;
+  startQuaternion = new Quaternion();
+  targetQuaternion = new Quaternion();
+  
+  operationQueue: Operation[] = [];
 
   constructor() {
     const frontTexture = makeFaceTexture({
@@ -74,13 +85,13 @@ class DihedralGroup4 {
   }
 
   rotate() {
-    if (this.remainingAngle !== 0) return;
+    if (this.remainingAngle !== 0 || this.isResetting) return;
     this.activeAxis.copy(zAxis);
     this.remainingAngle = Math.PI / 2;
   }
 
   flip() {
-    if (this.remainingAngle !== 0) return;
+    if (this.remainingAngle !== 0 || this.isResetting) return;
 
     this.activeAxis.copy(yAxis);
     this.remainingAngle = Math.PI;
@@ -94,7 +105,42 @@ class DihedralGroup4 {
           : this.remainingAngle * this.rotateSpeed;
       this.mesh.rotateOnWorldAxis(this.activeAxis, step);
       this.remainingAngle -= step;
+    } else if (this.isResetting) {
+      this.resetProgress += this.rotateSpeed;
+      if (this.resetProgress >= 1) {
+        this.resetProgress = 1;
+        this.isResetting = false;
+        this.mesh.rotation.set(0, 0, 0);
+      } else {
+        this.mesh.quaternion.slerpQuaternions(
+          this.startQuaternion,
+          this.targetQuaternion,
+          this.resetProgress
+        );
+      }
+    } else if (this.operationQueue.length > 0) {
+      const nextOp = this.operationQueue.shift()!;
+      if (nextOp === "rotate") {
+        this.activeAxis.copy(zAxis);
+        this.remainingAngle = Math.PI / 2;
+      } else if (nextOp === "flip") {
+        this.activeAxis.copy(yAxis);
+        this.remainingAngle = Math.PI;
+      }
     }
+  }
+
+  reset() {
+    if (this.remainingAngle !== 0 || this.isResetting) return;
+    this.isResetting = true;
+    this.resetProgress = 0;
+    this.startQuaternion.copy(this.mesh.quaternion);
+    this.targetQuaternion.setFromEuler(new Euler(0, 0, 0));
+    this.operationQueue = [];
+  }
+  
+  queueOperations(operations: Operation[]) {
+    this.operationQueue.push(...operations);
   }
 }
 
@@ -129,6 +175,42 @@ flipButton.addEventListener("click", () => {
   d4.flip();
 });
 viewer.appendChild(flipButton);
+
+const resetButton = document.createElement("button");
+resetButton.innerText = "Reset";
+resetButton.style.cssText =
+  "position:absolute; top:140px; left:20px; padding:10px; cursor:pointer;";
+resetButton.addEventListener("click", () => {
+  d4.reset();
+});
+viewer.appendChild(resetButton);
+
+const sequenceInput = document.createElement("input");
+sequenceInput.type = "text";
+sequenceInput.placeholder = "Enter sequence (r/f)";
+sequenceInput.style.cssText =
+  "position:absolute; top:200px; left:20px; padding:10px; width:120px;";
+viewer.appendChild(sequenceInput);
+
+const sequenceButton = document.createElement("button");
+sequenceButton.innerText = "Apply";
+sequenceButton.style.cssText =
+  "position:absolute; top:200px; left:160px; padding:10px; cursor:pointer;";
+sequenceButton.addEventListener("click", () => {
+  const input = sequenceInput.value.toLowerCase();
+  const operations: Operation[] = [];
+  for (const char of input) {
+    if (char === "r") {
+      operations.push("rotate");
+    } else if (char === "f") {
+      operations.push("flip");
+    }
+  }
+  if (operations.length > 0) {
+    d4.queueOperations(operations);
+  }
+});
+viewer.appendChild(sequenceButton);
 
 function animate() {
   requestAnimationFrame(animate);
